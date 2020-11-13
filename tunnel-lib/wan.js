@@ -25,10 +25,13 @@ function wan(config) {
         const lanTunnelId = _portId++;
         tunnel.lanTunnelId = lanTunnelId;
         let size = 0;
-        console.log('[' + lanTunnelId + '] LAN Get tunnel connexion from WAN  (port=', tunnel.address().port + ')');
+        console.log('[' + lanTunnelId + '] LAN Get tunnel connexion request from WAN  (port=', tunnel.address().port + ')');
         tunnel.setKeepAlive(true, 2000);
         if (waitingClients.length) {
-            pipeSockets(waitingClients.shift(), tunnel);
+            const waitingTunnel = waitingClients.shift();
+
+            console.log('[' + waitingTunnel.proxyId + '] PROXY uses LAN tunnel [' + tunnel.lanTunnelId + ']');
+            pipeSockets(waitingTunnel, tunnel);
             return;
         }
 
@@ -55,18 +58,18 @@ function wan(config) {
         let proxyId = _portId++;
         client.proxyId = proxyId;
 
-        console.log('[' + proxyId + '] Get request from browser');
+        console.log('[' + proxyId + '] PROXY Get request from browser');
 
         client.setKeepAlive(true);
         client.on('error', (error) => {
-            console.log('[' + proxyId + '] Proxy error handling', error);
+            console.log('[' + proxyId + '] PROXY error handling', error);
         });
         if (tunnels.length) {
             const tunnel = tunnels.shift();
-            console.log('[' + proxyId + '] use LAN tunnel [' + tunnel.lanTunnelId + ']');
+            console.log('[' + proxyId + '] PROXY uses LAN tunnel [' + tunnel.lanTunnelId + ']');
             pipeSockets(client, tunnel);
         } else {
-            console.log('[' + proxyId + '] wait for an unused tunnel');
+            console.log('[' + proxyId + '] PROXY wait for an unused tunnel');
             waitingClients.push(client);
         }
         deleteAfterTimeout(client);

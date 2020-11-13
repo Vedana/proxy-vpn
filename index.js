@@ -8,7 +8,7 @@ program.option('--wan-port <port>', 'Tunnel port', 8002);
 program.option('--wan-host <hostname>', 'WAN hostname');
 program.option('--lan-port <port>', 'Lan port', 8011); // Anyproxy
 program.option('--wan-proxy-port <port>', 'WAN proxy port  (Proxy to configure in your browser)', 8001); // Proxy to set
-program.option('--tunnel-count <count>', 'Tunnel count', 10);
+program.option('--tunnel-count <count>', 'Tunnel count', undefined);
 
 
 program.command('lan <wanHost>').action((wanHost) => {
