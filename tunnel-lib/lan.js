@@ -23,7 +23,7 @@ function createTunnelFactory(remoteServer, localServer, code) {
         });
         remote.setKeepAlive(true);
         remote.once('connect', function () {
-            console.log('[' + socketId + '] Connected to WAN ' + localServer.host + ':' + localServer.port);
+            console.log('[' + socketId + '] Connected to WAN ' + remoteServer.host + ':' + remoteServer.port);
             if (code != undefined) {
                 remote.write(code);
             }
