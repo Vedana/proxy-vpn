@@ -11,13 +11,7 @@ function wan(config) {
     let _portId = 0;
 
     const deleteAfterTimeout = client => {
-        setTimeout(() => {
-            const i = waitingClients.indexOf(client);
-            if (i >= 0) {
-                waitingClients.splice(i, 1);
-            }
-            client.end();
-        }, config.timeout || 5000);
+
     };
 
     // Tunnel
@@ -25,7 +19,7 @@ function wan(config) {
         const lanTunnelId = _portId++;
         tunnel.lanTunnelId = lanTunnelId;
         let size = 0;
-        console.log('[' + lanTunnelId + '] LAN Get tunnel connexion request from WAN  (port=', tunnel.address().port + ')');
+        console.log('[' + lanTunnelId + '] Get tunnel connexion from LAN', tunnel.remoteAddress + ':' + tunnel.remotePort);
         tunnel.setKeepAlive(true, 2000);
         if (waitingClients.length) {
             const waitingTunnel = waitingClients.shift();
@@ -44,6 +38,7 @@ function wan(config) {
         });
         tunnel.on('error', (error) => {
             console.log('[' + lanTunnelId + '] LAN tunnel connection error', error);
+            tunnels = tunnels.filter(_tunnel => _tunnel != tunnel);
         });
         tunnel.on('close', data => {
             console.log('[' + lanTunnelId + '] LAN tunnel close');
@@ -58,7 +53,7 @@ function wan(config) {
         let proxyId = _portId++;
         client.proxyId = proxyId;
 
-        console.log('[' + proxyId + '] PROXY Get request from browser');
+        console.log('[' + proxyId + '] PROXY Get request from browser', client.remoteAddress + ':' + client.remotePort);
 
         client.setKeepAlive(true);
         client.on('error', (error) => {
@@ -68,11 +63,12 @@ function wan(config) {
             const tunnel = tunnels.shift();
             console.log('[' + proxyId + '] PROXY uses LAN tunnel [' + tunnel.lanTunnelId + ']');
             pipeSockets(client, tunnel);
-        } else {
-            console.log('[' + proxyId + '] PROXY wait for an unused tunnel');
-            waitingClients.push(client);
+            return;
         }
-        deleteAfterTimeout(client);
+
+        console.log('[' + proxyId + '] PROXY wait for an unused tunnel');
+        waitingClients.push(client);
+
     }).listen(config.proxyPort);
 }
 
