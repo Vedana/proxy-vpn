@@ -3,10 +3,10 @@ const lan = require('./tunnel-lib/lan');
 const wan = require('./tunnel-lib/wan');
 const AnyProxy = require('anyproxy');
 
-program.option('--tunnel-port <port>', 'Tunnel port', 18001);
+program.option('--tunnel-port <port>', 'Tunnel port', 8010);
 program.option('--wan-port <port>', 'Tunnel port', 8002);
 program.option('--wan-host <hostname>', 'WAN hostname');
-program.option('--lan-port <port>', 'Lan port', 18002); // Anyproxy
+program.option('--lan-port <port>', 'Lan port', 8011); // Anyproxy
 program.option('--wan-proxy-port <port>', 'WAN proxy port  (Proxy to configure in your browser)', 8001); // Proxy to set
 program.option('--tunnel-count <count>', 'Tunnel count', 10);
 
